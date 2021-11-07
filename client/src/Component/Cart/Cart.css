@@ -1,0 +1,11 @@
+.ImageProductCart {
+  object-fit: cover;
+  height: 50px;
+  width: 100px;
+}
+option {
+  border: none;
+}
+td th {
+  width: 200px;
+}

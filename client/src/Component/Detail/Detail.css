@@ -1,0 +1,28 @@
+.Detail {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+.ImageDetail {
+  margin-right: 10px;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+.ProductDetail {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  
+}
+.canva{
+  position:absolute;
+  top:200px;
+  visibility:hidden;
+  left:0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.ImageBox:hover .canva{
+  visibility:visible;
+}
+

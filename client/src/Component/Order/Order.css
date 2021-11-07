@@ -1,0 +1,39 @@
+.fix-table {
+  display: flex;
+  justify-content: center;
+}
+.status {
+  object-fit: cover;
+  width: 100px;
+  height: 100px;
+}
+.order-status {
+  display: flex;
+  justify-content: space-evenly;
+  position: relative;
+}
+.line {
+  position: absolute;
+  border: #333 1px solid;
+  top: 50%;
+  width: 50%;
+  left: 25%;
+  height: 0px;
+  z-index: -100;
+}
+.status-info {
+  width: 100px;
+}
+.status-td {
+  text-align: center;
+}
+@media only screen and (max-width: 400px) {
+  .status-info {
+    width: 100px;
+  }
+  .status {
+    object-fit: cover;
+    width: 50px;
+    height: 50px;
+  }
+}

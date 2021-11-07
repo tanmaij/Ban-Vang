@@ -1,0 +1,62 @@
+.List-NewProducts {
+  transition: 1s ease-in-out;
+  display: flex;
+}
+.fix {
+  animation-name: startingNew;
+  animation-duration: 1s;
+  overflow: hidden;
+  width: 90%;
+  margin: auto;
+  position: relative;
+}
+@keyframes startingNew {
+  from {
+    transform: translateY(30px);
+    opacity: 0%;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 100%;
+  }
+}
+.btnSlide {
+  cursor: pointer;
+  position: absolute;
+  background: rgba(255, 0, 0, 0);
+  color: #333;
+  top: 50%;
+  z-index: 100;
+  font-size: 25px;
+  margin-top: -25.4px;
+  border: none;
+}
+
+.nextSlide {
+  right: 0;
+}
+.prevSlide {
+  left: 0;
+}
+.more {
+  margin: 10px 0 10px 0;
+  background: #c29958;
+  border: none;
+  color: white;
+  right: 0px;
+  padding: 10px;
+  font-weight: 700;
+  text-align: center;
+  top: 50%;
+  border-radius: 4px;
+  box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.1);
+}
+.more:hover,
+.more:not(:hover) {
+  background: #c29958;
+}
+.more:active {
+  outline: none;
+  background: #c29958;
+  border: none;
+}

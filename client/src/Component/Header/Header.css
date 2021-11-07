@@ -1,0 +1,16 @@
+.logo-img {
+  width: 55px;
+  height: 55px;
+}
+.logo {
+  display: flex;
+  justify-content: center;
+  font-family: "Alex Brush";
+  font-size: 50px;
+}
+.me-auto {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}

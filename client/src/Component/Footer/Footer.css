@@ -1,0 +1,47 @@
+.Footer {
+  height: 400px;
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff7ea;
+}
+.font {
+  font-size: 20px;
+  color: #c29958;
+  margin-right: 10px;
+}
+@media only screen and (max-width: 576px) {
+  .Footer {
+    flex-direction: column;
+  }
+  .map {
+    height: 75%;
+    width: 95% !important;
+  }
+}
+.map {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 50%;
+}
+.contact {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.contactus {
+  text-shadow: 0 0 1.2px #000000;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.mapImg {
+  object-fit: cover;
+  height: 80%;
+  width: 95%;
+}

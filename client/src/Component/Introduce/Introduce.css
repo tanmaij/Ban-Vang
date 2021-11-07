@@ -1,0 +1,100 @@
+.start {
+  animation-name: starting;
+  animation-duration: 3s;
+}
+
+.hide {
+  transition: 2s;
+  opacity: 0%;
+}
+.show {
+  transition: 2s;
+  opacity: 100%;
+}
+.introduceContainer {
+  position: relative;
+  height: 500px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+}
+@media only screen and (max-width: 700px) {
+  .introduceContainer {
+    display: none;
+  }
+}
+.introduceItem {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.introduceItem1 {
+  display: flex;
+  margin-left: -327.585px;
+  margin-top: -82.3px;
+}
+.item1 {
+  object-fit: contain;
+  width: 400px;
+  height: auto;
+}
+.sloganItem1 {
+  margin-left: 10px;
+}
+.slogan1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+.slogan1-2 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-family: "Arima Madurai";
+}
+.buttonHeader1 {
+  cursor: pointer;
+  text-align: center;
+  font-family: "Arima Madurai";
+  background: #c29958;
+  width: 70%;
+  font-size: 20px;
+  padding: 10px;
+  margin-left: 10px;
+  border-radius: 12px;
+  color: rgb(255, 255, 255);
+}
+.introduceItem2 {
+  display: flex;
+  margin-left: -265.675px;
+  margin-top: -112.835px;
+}
+.slogan2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+.slogan2-2 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-family: "Arima Madurai";
+  padding-bottom: 20px;
+  border-bottom: solid 5px #333;
+}
+.item2 {
+  object-fit: cover;
+  width: 300px;
+  transform: translateY(-90px);
+
+  height: auto;
+}
+.introduceItem3 {
+  margin-left: -219.94px;
+  margin-top: -124.73px;
+}
+@keyframes starting {
+  from {
+    margin-top: -62.3px;
+    opacity: 0%;
+  }
+  to {
+    margin-top: -82.3px;
+    opacity: 100%;
+  }
+}
