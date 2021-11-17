@@ -1,21 +1,26 @@
-import Header from "./Component/Header/Header";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./Pages/Home";
-import Footer from "./Component/Footer/Footer";
-import Cart from "./Pages/Cart";
-import Detail from "./Pages/Detail";
-import Order from "./Pages/Order";
+
+import DashBoard from "./DashBoard";
+import Main from "./Main";
+import Auth from "./Pages/Auth";
+
 function App() {
   return (
     <Router>
-      <Header />
       <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/carts" component={Cart} />
-        <Route exact path="/details" component={Detail} />
-        <Route exact path="/orders" component={Order} />
+        <Route exact path="/dashboards/*" component={DashBoard} />
+        <Route
+          exact
+          path="/auth/register"
+          render={(props) => <Auth {...props} authRouter="register" />}
+        />
+        <Route
+          exact
+          path="/auth/login"
+          render={(props) => <Auth {...props} authRouter="login" />}
+        />
+        <Route exact path="/*" component={Main} />
       </Switch>
-      <Footer />
     </Router>
   );
 }

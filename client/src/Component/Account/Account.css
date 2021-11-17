@@ -1,0 +1,26 @@
+.account-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.315);
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+.dialog {
+  padding: 20px;
+  background-color: white;
+  box-sizing: content-box;
+  border-radius: 6px;
+}
+.close-dialog {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.315);
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}

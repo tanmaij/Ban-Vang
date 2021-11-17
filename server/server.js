@@ -1,10 +1,28 @@
 const express = require("express");
 require("dotenv").config();
 const app = express();
+const cors = require("cors");
+
 const PORT = process.env.PORT;
+const authRouter = require("./routes/Auth");
+const accountRouter = require("./routes/Account");
+
+const corsOpts = {
+  origin: "*",
+
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+
+  allowedHeaders: [
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, 'X-CSRF-TOKEN",
+  ],
+};
 
 app.use(express.json());
+app.use(cors(corsOpts));
 app.listen(PORT, (err) => {
   if (err) console.log(err);
   else console.log("server has been started on port: " + PORT);
 });
+
+app.use("/auth", authRouter);
+app.use("/accounts", accountRouter);
