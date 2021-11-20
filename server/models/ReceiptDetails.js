@@ -1,9 +1,9 @@
 const db = require("../DBconnect");
 const receiptDetailsModel = {
-  add: (productId, quatity) => {
+  add: (productId, quantity, receiptId) => {
     return new Promise((resolve, reject) => {
       db.query(
-        `insert into receiptDetails(productId,quatity) values ('${productId}',${quatity})`,
+        `insert into receiptDetails(productId,quantity,ReceiptId) values ('${productId}',${quantity},'${receiptId}')`,
         (err, result) => {
           if (err) reject(err);
           else resolve(result);
@@ -36,7 +36,7 @@ const receiptDetailsModel = {
   getById: (ReceiptId) => {
     return new Promise((resolve, reject) => {
       db.query(
-        `select * from receiptDetails where ReceiptId=${ReceiptId}`,
+        `select p.Name as Name,p.Price as Price,r.Quantity as Quantity,Image from receiptDetails r, product p where r.ProductId=p.ProductId and ReceiptId=${ReceiptId}`,
         (err, result) => {
           if (err) reject(err);
           else resolve(result);

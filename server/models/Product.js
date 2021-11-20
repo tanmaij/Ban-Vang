@@ -1,9 +1,14 @@
 const db = require("../DBconnect");
 const productModel = {
-  add: (name, image, desc, size, quatity, createdAt) => {
+  add: (name, image, desc, size, quantity, price, public_id) => {
+    const date = new Date();
+    const createdAt = `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     return new Promise((resolve, reject) => {
+      const descParams = "`Desc`";
       db.query(
-        `insert into Product(Name,Image,Desc,Size,Quatity,Size,CreatedAt) values ('${name}','${image}','${desc}',${size},${quatity},'${createdAt}')`,
+        `insert into Product(Name,Image,${descParams},Size,Quantity,CreatedAt,price,public_id) values ('${name}','${image}','${desc}',${size},${quantity},'${createdAt}',${price},'${public_id}')`,
         (err, result) => {
           if (err) reject(err);
           else resolve(result);
@@ -11,10 +16,11 @@ const productModel = {
       );
     });
   },
-  update: (productid, name, image, desc, size, quatity) => {
+  update: (productid, name, image, desc, size, quantity, price, public_id) => {
+    const descParams = "`Desc`";
     return new Promise((resolve, reject) => {
       db.query(
-        `update Product set name='${name}',image='${image}',desc='${desc}',size=${size},quatity=${quatity} where productid=${productid}`,
+        `update Product set name='${name}',image='${image}',${descParams}='${desc}',size=${size},quantity=${quantity},price=${price},public_id='${public_id}' where productid=${productid}`,
         (err, result) => {
           if (err) reject(err);
           else resolve(result);
@@ -33,27 +39,22 @@ const productModel = {
       );
     });
   },
-  get: (order, sort, page, limit, size, price, search) => {
-    let receipt = "";
-    let groupby = "";
-    let condition = "";
-    let orderby = "";
-    let like = "%" + search + "%";
-    if (order === "receipt") {
-      receipt = `receiptdetails r,`;
-      groupby = "group by r.productId ";
-      condition = `and r.productId=p.productId `;
-      orderby = "sum(r.quatity) " + sort;
-    } else if (order === "createdat") {
-      orderby = "createdat " + sort;
-    }
-    let sizeSQL = "";
-    if (size > 0) sizeSQL = "and p.size=" + size;
-    let priceSQL = "";
-    if (price[0] > -1 && price[1] > -1)
-      priceSQL = "and p.price between " + price[0] + " and " + price[1];
-    const between = " between" + (page - 1) * limit + " and " + page * limit;
-    let sql = `Select p.productid,name,image,price,p.quatity from ${receipt} product p where ${like} ${sizeSQL} ${priceSQL} ${condition} ${between} ${groupby} order by ${orderby})`;
+  get: (search) => {
+    const desc = "`desc`";
+    let like = "";
+    if (search !== "") like = "where name like '%" + search + "%'";
+    let sql = `Select * from product ${like} `;
+    return new Promise((resolve, reject) => {
+      db.query(sql, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  },
+  getQuantityReceipt: (search) => {
+    let like = "";
+    if (search !== "") like = "and name like '%" + search + "%'";
+    let sql = `Select p.productid,SUM(r.Quantity) as ReceiptQuantity from receiptdetails r, product p where r.ProductId=p.ProductId ${like} group by r.ProductId`;
     return new Promise((resolve, reject) => {
       db.query(sql, (err, result) => {
         if (err) reject(err);
@@ -72,4 +73,33 @@ const productModel = {
       );
     });
   },
+  getByArrayId: (arrayId) => {
+    let ids = "";
+    for (let i = 0; i < arrayId.length; i++) {
+      if (i == 0) {
+        ids += " ProductId='" + arrayId[i] + "'";
+        continue;
+      }
+      ids += " or ProductId='" + arrayId[i] + "'";
+    }
+
+    return new Promise((resolve, reject) => {
+      db.query(`select * from product where ${ids}`, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  },
+  updateQuantity: (productId, quantity) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `update Product set quantity=${quantity} where productid=${productId}`,
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        }
+      );
+    });
+  },
 };
+module.exports = productModel;

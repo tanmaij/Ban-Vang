@@ -3,7 +3,7 @@ import AccountPage from "../Component/Account/Account";
 import { AccountReducer } from "../reducer/AccountReducer";
 import Loading from "../Component/Loading/Loading";
 import axios from "axios";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom";
 
 const Account = () => {
   const history = useHistory();
@@ -29,8 +29,7 @@ const Account = () => {
     } catch (error) {
       alert(error.response.data.message);
       if (error.response.status == 401 || error.response.status == 403) {
-        history.push("/");
-        return;
+        window.location.replace("/");
       }
       setStateAccount({ onLoading: false, data: { ...stateAccount.data } });
     }
@@ -53,8 +52,7 @@ const Account = () => {
     } catch (error) {
       alert(error.response.data.message);
       if (error.response.status == 401 || error.response.status == 403) {
-        history.push("/");
-        return;
+        window.location.replace("/");
       }
       setStateAccount({ onLoading: false, data: [...stateAccount.data] });
     }
@@ -77,12 +75,10 @@ const Account = () => {
       alert("Đã cập nhật thành công");
       setQuery({ ...query });
     } catch (error) {
-      console.log(error.response);
+      console.log(error.response.status);
       alert(error.response.data.message);
-      console.log(error.response.data);
       if (error.response.status == 401 || error.response.status == 403) {
-        history.push("/");
-        return;
+        window.location.replace("/");
       }
       setStateAccount({ onLoading: false, data: [...stateAccount.data] });
     }

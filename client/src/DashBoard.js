@@ -5,8 +5,8 @@ import {
   Switch,
   useHistory,
 } from "react-router-dom";
-import Product from "./Component/Product/Product";
-import Receipt from "./Component/Receipt/Receipt";
+import Product from "./Pages/Product";
+import Receipt from "./Pages/Receipt";
 import Slide from "./Component/Slider/Slide";
 import Account from "./Pages/Account";
 import AuthContext from "./context/AuthContext";
@@ -15,7 +15,7 @@ const DashBoard = ({}) => {
   const history = useHistory();
   useEffect(() => {
     if (authContext.accountData != null) {
-      if (authContext.accountData.IsAdmin == 0) history.push("/");
+      if (authContext.accountData.IsAdmin == 0) window.location.replace("/");
     } else history.push("/");
   }, [authContext]);
   return (

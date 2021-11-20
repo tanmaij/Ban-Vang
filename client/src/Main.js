@@ -8,6 +8,7 @@ import Order from "./Pages/Order";
 import AuthContext from "./context/AuthContext";
 import { useContext, useEffect } from "react";
 import { useHistory, Link } from "react-router-dom";
+import { NotFound } from "./Component/NotFound/NotFound";
 const Main = () => {
   const authContext = useContext(AuthContext);
   const history = useHistory();
@@ -22,8 +23,9 @@ const Main = () => {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/carts" component={Cart} />
-        <Route exact path="/details" component={Detail} />
+        <Route exact path="/details/:id" component={Detail} />
         <Route exact path="/orders" component={Order} />
+        <Route exact path="/*" component={NotFound} />
       </Switch>
       <Footer />
     </>

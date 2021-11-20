@@ -12,6 +12,7 @@
   left: 0px;
   top: 20%;
   visibility: hidden;
+  z-index: 99;
   border-radius: 0 0.25rem 0.25rem 0 !important;
 }
 .slideButton {

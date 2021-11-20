@@ -47,7 +47,8 @@ const basicAuth = async (req, res, next) => {
       isAdmin: getAccount[0].IsAdmin,
     };
     next();
-  } catch {
+  } catch (err) {
+    console.log(err);
     return res.status(401).json({ success: false, message: "Không chính xác" });
   }
 };

@@ -44,7 +44,8 @@ router.post("/login", async (req, res) => {
         .status(401)
         .json({ success: false, message: "Mật khẩu không chính xác" });
     res.status(200).json({ success: true, data: getAccount[0] });
-  } catch {
+  } catch (err) {
+    console.log(err);
     return res.status(401).json({ success: false, message: "Không chính xác" });
   }
 });

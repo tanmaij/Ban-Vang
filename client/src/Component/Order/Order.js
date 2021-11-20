@@ -2,7 +2,13 @@ import React from "react";
 import { Button, Container, Form, Table, Row, Col } from "react-bootstrap";
 import "./Order.css";
 import Status from "./Status";
-const Oder = () => {
+const Oder = ({ data, detailData, getById }) => {
+  let sum = 0;
+  console.log(detailData);
+  if (detailData != null)
+    for (let i = 0; i < detailData.Details.length; i++) {
+      sum += detailData.Details[i].Quantity * detailData.Details[i].Price;
+    }
   return (
     <>
       <h3 style={{ fontFamily: "Times New Roman", textAlign: "center" }}>
@@ -13,11 +19,18 @@ const Oder = () => {
       >
         <Col xs={12} xl={4} lg={4} sm={12}>
           <Form.Label>Chọn đơn hàng của bạn</Form.Label>
-          <Form.Select aria-label="Chọn đơn hàng của bạn">
-            <option>Open this select menu</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+          <Form.Select
+            onChange={(e) => getById(e.target.value)}
+            aria-label="Chọn đơn hàng của bạn"
+          >
+            {data.map((item) => (
+              <option value={item.ReceiptId}>
+                Đơn hàng{" "}
+                {`${new Date(item.CreatedAt).getDate()}-${
+                  new Date(item.CreatedAt).getMonth() + 1
+                }-${new Date(item.CreatedAt).getFullYear()}`}
+              </option>
+            ))}
           </Form.Select>
         </Col>
       </Row>
@@ -32,36 +45,42 @@ const Oder = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td className="status-td">Nhẫn hoàng kim</td>
-              <td className="status-td">2.000.000 vnđ</td>
-              <td className=" status-td">x2</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td className="status-td">Nhẫn hoàng kim</td>
-              <td className="status-td">2.000.000 vnđ</td>
-              <td className=" status-td">x2</td>
-            </tr>
-            <tr>
-              <td>3</td>
-
-              <td className="status-td">Nhẫn hoàng kim</td>
-              <td className="status-td">2.000.000 vnđ</td>
-              <td className=" status-td">x2</td>
-            </tr>
+            {detailData != null
+              ? detailData.Details.map((item, index) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td className="status-td">{item.Name}</td>
+                    <td className="status-td">
+                      {item.Price.toLocaleString("it-IT", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </td>
+                    <td className=" status-td">{item.Quantity}</td>
+                  </tr>
+                ))
+              : null}
             <tr style={{ fontWeight: "650" }}>
               <td></td>
               <td></td>
               <td>Tổng thành tiền</td>
-              <td>2.000.000 vnđ</td>
+              <td>
+                {sum.toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </td>
               <td></td>
             </tr>
           </tbody>
         </Table>
       </div>
-      <Status />
+      {detailData != null ? (
+        <Status
+          status={detailData.Receipt.Status}
+          payment={detailData.Receipt.PaymentMethod}
+        />
+      ) : null}
     </>
   );
 };

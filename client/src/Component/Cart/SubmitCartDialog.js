@@ -1,54 +1,53 @@
 import React, { useState } from "react";
 import { Button, Container, Form, Table, Row, Col } from "react-bootstrap";
-import "./Receipt.css";
-const ProductDialog = ({ dialogDetails, setdialogDetails }) => {
+import demo from "../../Asset/demo.png";
+import "../Receipt/Receipt.css";
+const ProductDialog = ({ cartData, setcartData, handleSubmitReceipt }) => {
   let sum = 0;
-  if (dialogDetails.data != null)
-    for (let i = 0; i < dialogDetails.data.Details.length; i++) {
-      sum +=
-        dialogDetails.data.Details[i].Quantity *
-        dialogDetails.data.Details[i].Price;
+  if (cartData.data != null)
+    for (let i = 0; i < cartData.data.Carts.length; i++) {
+      sum += cartData.data.Carts[i].Price * cartData.data.Carts[i].Num;
     }
-  if (dialogDetails.dialogDetailShow && dialogDetails.data != null)
+  if (cartData.dialogShow == true && cartData.data != null)
     return (
       <div className="account-dialog">
         <div
-          onClick={() => {
-            setdialogDetails({ ...dialogDetails, dialogDetailShow: false });
-          }}
           className="close-dialog"
+          onClick={() => {
+            setcartData({ ...cartData, dialogShow: false });
+          }}
         ></div>
-        <div className="dialog">
+        <div className="dialog cartDialog">
           <div className="profile">
             <div>
               Tài khoản:{" "}
               <span className="infor-user">
-                {dialogDetails.data.Receipt.Username}
+                {cartData.data.Account.Username}
               </span>
             </div>
             <div>
               Họ và tên:{" "}
-              <span className="infor-user">
-                {dialogDetails.data.Receipt.Name}
-              </span>
+              <span className="infor-user">{cartData.data.Account.Name}</span>
             </div>
             <div>
               CMND/CCCD:{" "}
               <span className="infor-user">
-                {dialogDetails.data.Receipt.Identity}
+                {cartData.data.Account.Identity}
               </span>
             </div>
             <div>
               Số điện thoại:{" "}
-              <span className="infor-user">
-                {dialogDetails.data.Receipt.Phone}
-              </span>
+              <span className="infor-user">{cartData.data.Account.Phone}</span>
             </div>
           </div>
           <div style={{ marginBottom: "20px" }}>
             Địa chỉ :{" "}
+            <span className="infor-user">{cartData.data.Address}</span>
+          </div>
+          <div style={{ marginBottom: "20px" }}>
+            Cách thanh toán :
             <span className="infor-user">
-              {dialogDetails.data.Receipt.CustomerAddress}
+              {cartData.data.Payment == "0" ? " Trực tiếp" : "Ví Mô Mô"}
             </span>
           </div>
           <Table responsive>
@@ -62,7 +61,7 @@ const ProductDialog = ({ dialogDetails, setdialogDetails }) => {
               </tr>
             </thead>
             <tbody>
-              {dialogDetails.data.Details.map((item, index) => (
+              {cartData.data.Carts.map((item, index) => (
                 <tr>
                   <td>{index + 1}</td>
                   <td>
@@ -75,15 +74,14 @@ const ProductDialog = ({ dialogDetails, setdialogDetails }) => {
                       currency: "VND",
                     })}
                   </td>
-                  <td>{item.Quantity}</td>
+                  <td>{item.Num}</td>
                 </tr>
               ))}
-
-              <tr style={{ fontWeight: "650" }}>
+              <tr>
                 <td></td>
                 <td></td>
-                <td>Tổng thành tiền</td>
-                <td>
+                <td style={{ fontWeight: "650" }}>Thành tiền</td>
+                <td style={{ fontWeight: "650" }}>
                   {sum.toLocaleString("it-IT", {
                     style: "currency",
                     currency: "VND",
@@ -93,6 +91,15 @@ const ProductDialog = ({ dialogDetails, setdialogDetails }) => {
               </tr>
             </tbody>
           </Table>
+          <Button
+            onClick={() => {
+              handleSubmitReceipt();
+            }}
+            style={{ marginTop: "20px", float: "right" }}
+            variant="light"
+          >
+            Xác nhận đơn
+          </Button>
         </div>
       </div>
     );

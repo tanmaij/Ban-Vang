@@ -1,9 +1,31 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Container, Form, Table, Row, Col } from "react-bootstrap";
 import demo from "../../Asset/demo.png";
 import ProductDialog from "./ProductDialog";
-const Product = () => {
+import Pagination from "../Pagination/Pagination";
+
+const Product = ({
+  data,
+  dataDialog,
+  setdataDialog,
+  handleSubmitForm,
+  query,
+  setquery,
+  pagination,
+  setPagination,
+  deletePoduct,
+}) => {
   const [dialogShow, setdialogShow] = useState(false);
+  const handleChangeQuery = (e) => {
+    setquery({ ...query, [e.target.name]: e.target.value });
+  };
+  let timer = setTimeout(() => {}, 1000);
+  const changeInputQuery = (e) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      setquery({ ...query, [e.target.name]: e.target.value });
+    }, 2000);
+  };
   return (
     <Container
       className="dashboard-page"
@@ -12,7 +34,13 @@ const Product = () => {
         paddingBottom: "40px",
       }}
     >
-      <ProductDialog dialogShow={dialogShow} setdialogShow={setdialogShow} />
+      <ProductDialog
+        dialogShow={dialogShow}
+        setdialogShow={setdialogShow}
+        dataDialog={dataDialog}
+        setdataDialog={setdataDialog}
+        handleSubmitForm={handleSubmitForm}
+      />
       <Row>
         <Col xs={12} xl={2} lg={2} sm={12}>
           <Form.Label></Form.Label>
@@ -28,22 +56,38 @@ const Product = () => {
         </Col>
         <Col xs={12} xl={3} lg={3} sm={12}>
           <Form.Label>Sắp xếp</Form.Label>{" "}
-          <Form.Select aria-label="Sắp xếp">
-            <option value="0">Ngày tạo</option>
-            <option value="1">Số lượng bán</option>
-            <option value="3">Giá</option>
+          <Form.Select
+            onChange={handleChangeQuery}
+            name="order"
+            aria-label="Sắp xếp"
+            defaultValue={query.order}
+          >
+            <option value="createdAt">Ngày tạo</option>
+            <option value="receipt">Số lượng bán</option>
+            <option value="price">Giá</option>
           </Form.Select>{" "}
         </Col>
         <Col xs={12} xl={3} lg={3} sm={12}>
           <Form.Label>Sắp xếp</Form.Label>{" "}
-          <Form.Select aria-label="Sắp xếp">
-            <option value="0">Tăng</option>
-            <option value="1">Giảm</option>
+          <Form.Select
+            onChange={handleChangeQuery}
+            name="sort"
+            aria-label="Sắp xếp"
+            defaultValue={query.sort}
+          >
+            <option value="asc">Tăng</option>
+            <option value="desc">Giảm</option>
           </Form.Select>{" "}
         </Col>
         <Col xs={12} xl={3} lg={3} sm={12}>
           <Form.Label>Tìm kiếm</Form.Label>{" "}
-          <Form.Control type="text" placeholder="Nhập vào từ khóa" />
+          <Form.Control
+            onChange={changeInputQuery}
+            name="like"
+            type="text"
+            placeholder="Nhập vào từ khóa"
+            defaultValue={query.like}
+          />
         </Col>
       </Row>
       <Table responsive>
@@ -59,67 +103,61 @@ const Product = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>12</td>
-            <td>17</td>
-            <td>asndawdwd</td>
-            <td>
-              <Button
-                onClick={() => {
-                  window.confirm("Bạn có chắc muốn xóa sản phẩm này");
-                }}
-                variant="danger"
-              >
-                Xóa
-              </Button>
-              <Button
-                onClick={() => {
-                  setdialogShow(true);
-                }}
-                variant="light"
-              >
-                Sửa
-              </Button>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>12</td>
-            <td>17</td>
-            <td>asndawdwd</td>
-            <td>
-              <Button variant="danger">Xóa</Button>
-              <Button variant="light">Sửa</Button>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>12</td>
-            <td>17</td>
-            <td>asndawdwd</td>
-            <td>
-              <Button variant="danger">Xóa</Button>
-              <Button variant="light">Sửa</Button>
-            </td>
-          </tr>
+          {data.map((item, index) => {
+            return (
+              <tr>
+                <td>{index + 1}</td>
+                <td>
+                  <img className="ImageProductCart" src={item.Image} />
+                </td>
+                <td>{item.Name}</td>
+                <td>
+                  {item.Price.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </td>
+                <td>{item.Quantity}</td>
+                <td>{item.Size}</td>
+                <td>{item.Desc}</td>
+                <td>
+                  <Button
+                    onClick={() => {
+                      const warning = window.confirm(
+                        "Bạn có chắc muốn xóa sản phẩm này"
+                      );
+                      if (warning) deletePoduct(item.ProductId);
+                    }}
+                    variant="danger"
+                  >
+                    Xóa
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setdialogShow(true);
+                      setdataDialog({
+                        productId: item.ProductId,
+                        name: item.Name,
+                        desc: item.Desc,
+                        size: item.Size,
+                        quantity: item.Quantity,
+                        price: item.Price,
+                        file: null,
+                        type: 1,
+                        display: item.Image,
+                      });
+                    }}
+                    variant="light"
+                  >
+                    Sửa
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
+      <Pagination pagination={pagination} setquery={setquery} query={query} />
       {/* <Form style={{ padding: "40px" }}>
         <Row>
           <Col

@@ -32,9 +32,9 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="#home">Trang chủ</Nav.Link>
-              <Nav.Link href="#link">Giỏ hàng</Nav.Link>
-              <Nav.Link href="#link">Đơn hàng</Nav.Link>
+              <Nav.Link href="/">Trang chủ</Nav.Link>
+              <Nav.Link href="/carts">Giỏ hàng</Nav.Link>
+              <Nav.Link href="/orders">Đơn hàng</Nav.Link>
               {authState == null ? (
                 <Nav.Link href="/auth/login">Đăng nhập</Nav.Link>
               ) : (

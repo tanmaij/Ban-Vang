@@ -14,7 +14,7 @@
 }
 .line {
   position: absolute;
-  border: #333 1px solid;
+  border: rgba(51, 51, 51, 0.493) 1px solid;
   top: 50%;
   width: 50%;
   left: 25%;

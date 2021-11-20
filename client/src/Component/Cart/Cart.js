@@ -1,8 +1,19 @@
 import React from "react";
 import { Button, Container, Form, Table, Row, Col } from "react-bootstrap";
-import demo from "../../Asset/demo.png";
 import "./Cart.css";
-const Cart = () => {
+const Cart = ({
+  cartState,
+  setCartstate,
+  incProduct,
+  authContext,
+  handleSubmitCart,
+  bill,
+  setbill,
+}) => {
+  let sum = 0;
+  for (let i = 0; i < cartState.data.length; i++) {
+    sum += cartState.data[i].Price * cartState.data[i].Num;
+  }
   return (
     <Container style={{ paddingTop: "40px", paddingBottom: "40px" }}>
       <h3 style={{ fontFamily: "Times New Roman", textAlign: "center" }}>
@@ -19,54 +30,60 @@ const Cart = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>
-              <Button variant="light">-</Button> x2{" "}
-              <Button variant="light">+</Button>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>
-              <Button variant="light">-</Button> x2{" "}
-              <Button variant="light">+</Button>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>
-              <img className="ImageProductCart" src={demo} />
-            </td>
-            <td>Nhẫn hoàng kim</td>
-            <td>2.000.000 vnđ</td>
-            <td>
-              <Button variant="light">-</Button> x2{" "}
-              <Button variant="light">+</Button>
-            </td>
-          </tr>
+          {cartState.data.map((item, index) => {
+            return (
+              <tr>
+                <td>{index + 1}</td>
+                <td>
+                  <img className="ImageProductCart" src={item.Image} />
+                </td>
+                <td>{item.Name}</td>
+                <td>
+                  {item.Price.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </td>
+                <td>
+                  <Button
+                    onClick={() => {
+                      incProduct(item.ProductId, -1);
+                    }}
+                    variant="light"
+                  >
+                    -
+                  </Button>{" "}
+                  x{item.Num}
+                  <Button
+                    onClick={() => {
+                      incProduct(item.ProductId, 1);
+                    }}
+                    variant="light"
+                  >
+                    +
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+
           <tr style={{ fontWeight: "650" }}>
             <td></td>
             <td></td>
             <td>Tổng thành tiền</td>
-            <td>2.000.000 vnđ</td>
+            <td>
+              {sum.toLocaleString("it-IT", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </td>
             <td></td>
           </tr>
         </tbody>
       </Table>
-      <Form style={{ padding: "40px" }}>
+      <Form onSubmit={handleSubmitCart} style={{ padding: "40px" }}>
         <Row>
-          <Col
+          {/* <Col
             style={{
               paddingTop: "20px",
               paddingBottom: "20px",
@@ -91,7 +108,7 @@ const Cart = () => {
           >
             <Form.Label>Số điện thoại</Form.Label>
             <Form.Control type="text" placeholder="0898989898" />
-          </Col>
+          </Col> */}
           <Col
             style={{
               paddingTop: "20px",
@@ -102,21 +119,13 @@ const Cart = () => {
             lg={12}
             sm={12}
           >
-            <Form.Label>Địa chỉ</Form.Label>
-            <Form.Control type="text" placeholder="123 Hồ Tây ... " />
-          </Col>
-          <Col
-            style={{
-              paddingTop: "20px",
-              paddingBottom: "20px",
-            }}
-            xs={6}
-            xl={6}
-            lg={6}
-            sm={6}
-          >
-            <Form.Label>CMND/CCCD</Form.Label>
-            <Form.Control type="text" placeholder="312488967" />
+            {" "}
+            <h5>
+              Thanh toán với tư cách{" "}
+              {authContext.accountData != null
+                ? authContext.accountData.Name
+                : null}
+            </h5>
           </Col>
 
           <Col
@@ -124,14 +133,41 @@ const Cart = () => {
               paddingTop: "20px",
               paddingBottom: "20px",
             }}
-            xs={6}
+            xs={12}
             xl={6}
             lg={6}
-            sm={6}
+            sm={12}
+          >
+            <Form.Label>Địa chỉ</Form.Label>
+            <Form.Control
+              defaultValue={bill.address}
+              onChange={(e) => {
+                setbill({ ...bill, address: e.target.value });
+              }}
+              type="text"
+              placeholder="123 Hồ Tây ... "
+            />
+          </Col>
+
+          <Col
+            style={{
+              paddingTop: "20px",
+              paddingBottom: "20px",
+            }}
+            xs={12}
+            xl={6}
+            lg={6}
+            sm={12}
           >
             <Form.Label>Cách thanh toán</Form.Label>
-            <Form.Select aria-label="Thanh toán">
-              <option>Trực tiếp</option>
+            <Form.Select
+              defaultValue={bill.payment}
+              onChange={(e) => {
+                setbill({ ...bill, payment: e.target.value });
+              }}
+              aria-label="Thanh toán"
+            >
+              <option value="0">Trực tiếp</option>
               <option value="1">Ví momo</option>
             </Form.Select>
           </Col>

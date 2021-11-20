@@ -2,9 +2,9 @@ const db = require("../DBconnect");
 const accountModel = {
   add: (userName, password, name, identity, phone) => {
     const date = new Date();
-    const createdAt = `${date.getDate()}-${
+    const createdAt = `${date.getFullYear()}-${
       date.getMonth() + 1
-    }-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     return new Promise((resolve, reject) => {
       db.query(
         `INSERT INTO account(Username, Password, Name, Identity, Phone, IsAdmin,CreatedAt) VALUES ('${userName}','${password}','${name}','${identity}','${phone}',0,'${createdAt}')`,

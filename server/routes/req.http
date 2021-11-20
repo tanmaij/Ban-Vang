@@ -16,3 +16,5 @@ Content-Type: application/json
     "username":"maideptrai",
     "password":"12345678"
 }
+### 
+GET http://localhost:5000/products?_like=&_order=receipt&_sort=asc

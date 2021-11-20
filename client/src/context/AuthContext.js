@@ -7,26 +7,27 @@ export const AuthProvider = ({ children }) => {
     const base64String = localStorage.getItem(
       process.env.REACT_APP_BASIC_AUTH_NAME
     );
-    if (base64String != null || base64String !== "") {
-      const base64String = localStorage.getItem(
-        process.env.REACT_APP_BASIC_AUTH_NAME
-      );
-      axios
-        .post(
-          `${process.env.REACT_APP_SERVER_URL}/auth/login`,
-          {},
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Basic " + base64String,
-            },
-          }
-        )
-        .then((res) => {
-          setaccountData(res.data.data);
-        })
-        .catch((error) => setaccountData(null));
-    }
+    if (base64String)
+      if (base64String !== undefined) {
+        const base64String = localStorage.getItem(
+          process.env.REACT_APP_BASIC_AUTH_NAME
+        );
+        axios
+          .post(
+            `${process.env.REACT_APP_SERVER_URL}/auth/login`,
+            {},
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Basic " + base64String,
+              },
+            }
+          )
+          .then((res) => {
+            setaccountData(res.data.data);
+          })
+          .catch((error) => setaccountData(null));
+      }
   }, []);
 
   const authLogout = () => {
@@ -37,19 +38,24 @@ export const AuthProvider = ({ children }) => {
   const checkLogin = async () => {
     const base64 = localStorage.getItem(process.env.REACT_APP_BASIC_AUTH_NAME);
     try {
-      await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/auth/login`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Basic " + base64,
-          },
-        }
-      );
+      if (base64)
+        if (base64 !== undefined)
+          await axios.post(
+            `${process.env.REACT_APP_SERVER_URL}/auth/login`,
+            {},
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Basic " + base64,
+              },
+            }
+          );
+        else return false;
+      if (base64 == "") return false;
       return true;
     } catch (error) {
       if (error.response) return false;
+      return false;
     }
   };
 
