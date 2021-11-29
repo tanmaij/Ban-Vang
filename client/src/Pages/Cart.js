@@ -161,20 +161,24 @@ const Cart = () => {
   };
   useEffect(async () => {
     const search = window.location.search;
-    const signature = new URLSearchParams(search).get("signature");
-    if (signature != null)
+    const orderId = new URLSearchParams(search).get("orderId");
+    console.log(orderId);
+    if (orderId != null)
       try {
         const response = await axios.post(
           `${process.env.REACT_APP_SERVER_URL}/receipts/momo`,
-          { chuky: signature },
+          { orderId: orderId },
           {
             headers: {
-              Authorization: signature,
+              "Content-Type": "application/json",
+              Authorization:
+                "Basic " +
+                localStorage.getItem(process.env.REACT_APP_BASIC_AUTH_NAME),
             },
           }
         );
-        alert("Thanh toán thành công! Chúng tôi xin chân thành cảm ơn mày");
-        setCartstate("");
+
+        alert("Thanh toán thành công! Chúng tôi xin chân thành cảm ơn");
       } catch (error) {
         if (error.response) {
           if (error.response.status == 401 || error.response.status == 403) {

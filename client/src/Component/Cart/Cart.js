@@ -11,9 +11,10 @@ const Cart = ({
   setbill,
 }) => {
   let sum = 0;
-  for (let i = 0; i < cartState.data.length; i++) {
-    sum += cartState.data[i].Price * cartState.data[i].Num;
-  }
+  if (cartState.data)
+    for (let i = 0; i < cartState.data.length; i++) {
+      sum += cartState.data[i].Price * cartState.data[i].Num;
+    }
   return (
     <Container style={{ paddingTop: "40px", paddingBottom: "40px" }}>
       <h3 style={{ fontFamily: "Times New Roman", textAlign: "center" }}>
@@ -30,42 +31,44 @@ const Cart = ({
           </tr>
         </thead>
         <tbody>
-          {cartState.data.map((item, index) => {
-            return (
-              <tr>
-                <td>{index + 1}</td>
-                <td>
-                  <img className="ImageProductCart" src={item.Image} />
-                </td>
-                <td>{item.Name}</td>
-                <td>
-                  {item.Price.toLocaleString("it-IT", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </td>
-                <td>
-                  <Button
-                    onClick={() => {
-                      incProduct(item.ProductId, -1);
-                    }}
-                    variant="light"
-                  >
-                    -
-                  </Button>{" "}
-                  x{item.Num}
-                  <Button
-                    onClick={() => {
-                      incProduct(item.ProductId, 1);
-                    }}
-                    variant="light"
-                  >
-                    +
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
+          {cartState.data
+            ? cartState.data.map((item, index) => {
+                return (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>
+                      <img className="ImageProductCart" src={item.Image} />
+                    </td>
+                    <td>{item.Name}</td>
+                    <td>
+                      {item.Price.toLocaleString("it-IT", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </td>
+                    <td>
+                      <Button
+                        onClick={() => {
+                          incProduct(item.ProductId, -1);
+                        }}
+                        variant="light"
+                      >
+                        -
+                      </Button>{" "}
+                      x{item.Num}
+                      <Button
+                        onClick={() => {
+                          incProduct(item.ProductId, 1);
+                        }}
+                        variant="light"
+                      >
+                        +
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
 
           <tr style={{ fontWeight: "650" }}>
             <td></td>

@@ -46,7 +46,7 @@ const Page = ({ pagination, query, setquery }) => {
             </Pagination.Item>
           ) : null}
           {pagination.page > 3 ? <Pagination.Ellipsis /> : null}
-          {pagination.page > 1 ? (
+          {pagination.page > 2 ? (
             <Pagination.Item
               onClick={(e) => {
                 setquery({ ...query, page: pagination.page - 1 });
@@ -56,7 +56,7 @@ const Page = ({ pagination, query, setquery }) => {
             </Pagination.Item>
           ) : null}
           <Pagination.Item active>{pagination.page}</Pagination.Item>
-          {pagination.page < totalPage ? (
+          {pagination.page < totalPage - 1 ? (
             <Pagination.Item
               onClick={(e) => {
                 setquery({ ...query, page: pagination.page + 1 });

@@ -48,6 +48,7 @@ const Product = ({
             style={{ marginTop: "20px" }}
             onClick={() => {
               setdialogShow(true);
+              setdataDialog({ ...dataDialog, type: 0 });
             }}
             variant="light"
           >

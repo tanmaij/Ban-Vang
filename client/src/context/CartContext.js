@@ -34,7 +34,12 @@ export const CartProvider = ({ children }) => {
     if (check == -1) alert("Có lỗi xảy ra");
     else if (check == 0) alert("Xin lỗi, sản phẩm đã hết hàng");
     else if (check == 1) {
-      if (new RegExp(id, "i").test(cartCookie))
+      if (cartCookie.length == 0) {
+        setcartCookie(id.toString());
+        alert("Đã thêm vào giỏ");
+        return;
+      }
+      if (cartCookie.split("-").includes(id))
         alert("Mặt hàng này đã thêm vào giỏ rồi !");
       else {
         setcartCookie(`${cartCookie}-${id}`);

@@ -4,29 +4,33 @@ const express = require("express");
 const basicAuth = require("../middleware/basicAuth");
 const accountModel = require("../models/Account");
 const receiptDetailsModel = require("../models/ReceiptDetails");
-const { response } = require("express");
 const router = express.Router();
 
 class payment {
-  constructor(Carts, Address, Signature, User) {
+  constructor(Carts, Address, Id, User) {
     this.Carts = Carts;
     this.Address = Address;
-    this.Signature = Signature;
+    this.Id = Id;
     this.User = User;
   }
 }
 
 let paymentData = [];
-router.post("/momo", async (req, res) => {
-  const keys = req.headers.authorization;
+router.post("/momo", basicAuth, async (req, res) => {
+  const orderId = await req.body.orderId;
   const getPayment = paymentData.find((item) => {
-    console.log(item.Signature);
-    return item.Signature === keys;
+    return item.Id === orderId;
   });
-  if (!getPayment)
+
+  if (!getPayment) {
     return res
       .status(400)
       .json({ success: false, message: "Không tìm thấy hóa đơn của bạn" });
+  }
+  if (req.user.username !== getPayment.User)
+    return res
+      .status(400)
+      .json({ success: false, message: "Bạn không đủ quyền" });
   const Carts = getPayment.Carts;
   const Address = getPayment.Address;
   const User = getPayment.User;
@@ -63,7 +67,7 @@ router.post("/momo", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(400).json({ success: false, message: "ERROR" });
+    return res.status(500).json({ success: false, message: "ERROR" });
   }
 });
 router.delete("/:id", basicAuth, async (req, res) => {
@@ -214,6 +218,7 @@ router.get("/", basicAuth, async (req, res) => {
   }
 });
 router.post("/", basicAuth, async (req, res) => {
+  console.log("rrrrrrrrrrrrrrrrr");
   const { Carts, Address, Payment } = req.body;
   const username = req.user.username;
   if (!Carts)
@@ -281,129 +286,126 @@ router.post("/", basicAuth, async (req, res) => {
   } else if (parseInt(Payment) == 1) {
     let money = 0;
     for (let i = 0; i < Carts.length; i++) {
-      {
-        const getProduct = await productModel.getById(Carts[i].ProductId);
-        if (getProduct[0].Quantity - Carts[i].Num < 0) {
-          await receiptModel.delete(newId);
-          return res
-            .status(400)
-            .json({ success: false, message: "Không đủ số lượng" });
-        }
-        money += Carts[i].Num * getProduct[0].Price;
-      }
-      const partnerCode = process.env.MOMO_PARTNER_CODE;
-      const accessKey = process.env.MOMO_ACCESS_KEY;
-      const secretkey = process.env.MOMO_SECRET_KEY;
-      const requestId = partnerCode + new Date().getTime();
-      const orderId = requestId;
-      const orderInfo = "Đơn hàng của " + username;
-      const redirectUrl = "http://localhost:3000/carts";
-      const ipnUrl = "https://callback.url/notify";
-      // var ipnUrl = redirectUrl = "https://webhook.site/454e7b77-f177-4ece-8236-ddf1c26ba7f8";
-      const amount = money;
-      const requestType = "captureWallet";
-      const extraData = ""; //pass empty value if your merchant does not have stores
-
-      //before sign HMAC SHA256 with format
-      //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
-      const rawSignature =
-        "accessKey=" +
-        accessKey +
-        "&amount=" +
-        amount +
-        "&extraData=" +
-        extraData +
-        "&ipnUrl=" +
-        ipnUrl +
-        "&orderId=" +
-        orderId +
-        "&orderInfo=" +
-        orderInfo +
-        "&partnerCode=" +
-        partnerCode +
-        "&redirectUrl=" +
-        redirectUrl +
-        "&requestId=" +
-        requestId +
-        "&requestType=" +
-        requestType;
-      //puts raw signature
-      console.log("--------------------RAW SIGNATURE----------------");
-      console.log(rawSignature);
-      //signature
-      const crypto = require("crypto");
-      const signature = crypto
-        .createHmac("sha256", secretkey)
-        .update(rawSignature)
-        .digest("hex");
-      console.log("--------------------SIGNATURE----------------");
-      console.log(signature);
-
-      //json object send to MoMo endpoint
-      const requestBody = JSON.stringify({
-        partnerCode: partnerCode,
-        accessKey: accessKey,
-        requestId: requestId,
-        amount: amount,
-        orderId: orderId,
-        orderInfo: orderInfo,
-        redirectUrl: redirectUrl,
-        ipnUrl: ipnUrl,
-        extraData: extraData,
-        requestType: requestType,
-        signature: signature,
-        lang: "en",
-      });
-      //Create the HTTPS objects
-      const https = require("https");
-      const options = {
-        hostname: "test-payment.momo.vn",
-        port: 443,
-        path: "/v2/gateway/api/create",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(requestBody),
-        },
-      };
-      //Send the request and get the response
-
-      const req = https.request(options, (response) => {
-        console.log(`Status: ${response.statusCode}`);
-        console.log(`Headers: ${JSON.stringify(response.headers)}`);
-        response.setEncoding("utf8");
-        response.on("data", (body) => {
-          console.log("Body: ");
-          console.log(body);
-          console.log("payUrl: ");
-          console.log(JSON.parse(body).payUrl);
-          const newPayment = new payment(Carts, Address, signature, username);
-          console.log(newPayment);
-          paymentData.push(newPayment);
-          setTimeout(() => {
-            paymentData = paymentData.filter((item) => {
-              return item !== newPayment;
-            });
-          }, 10 * 60 * 1000);
-          return res
-            .status(200)
-            .json({ success: true, data: JSON.parse(body).payUrl });
-        });
-        res.on("end", () => {
-          console.log("No more data in response.");
-        });
-      });
-      req.on("error", (e) => {
-        console.log(`problem with request: ${e.message}`);
+      const getProduct = await productModel.getById(Carts[i].ProductId);
+      if (getProduct[0].Quantity - Carts[i].Num < 0) {
+        await receiptModel.delete(newId);
         return res
-          .status(500)
-          .json({ success: false, message: "Lỗi không xác định" });
-      });
-      // write data to request body
-      console.log("Sending....");
-      req.write(requestBody);
-      req.end();
+          .status(400)
+          .json({ success: false, message: "Không đủ số lượng" });
+      }
+      money += Carts[i].Num * getProduct[0].Price;
     }
+    const partnerCode = process.env.MOMO_PARTNER_CODE;
+    const accessKey = process.env.MOMO_ACCESS_KEY;
+    const secretkey = process.env.MOMO_SECRET_KEY;
+    const requestId = partnerCode + new Date().getTime();
+    const orderId = requestId;
+    const orderInfo = "Đơn hàng của " + username;
+    const redirectUrl = "http://localhost:3000/carts";
+    const ipnUrl = "https://callback.url/notify";
+    // var ipnUrl = redirectUrl = "https://webhook.site/454e7b77-f177-4ece-8236-ddf1c26ba7f8";
+    const amount = money;
+    const requestType = "captureWallet";
+    const extraData = ""; //pass empty value if your merchant does not have stores
+    console.log(Carts);
+    //before sign HMAC SHA256 with format
+    //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
+    const rawSignature =
+      "accessKey=" +
+      accessKey +
+      "&amount=" +
+      amount +
+      "&extraData=" +
+      extraData +
+      "&ipnUrl=" +
+      ipnUrl +
+      "&orderId=" +
+      orderId +
+      "&orderInfo=" +
+      orderInfo +
+      "&partnerCode=" +
+      partnerCode +
+      "&redirectUrl=" +
+      redirectUrl +
+      "&requestId=" +
+      requestId +
+      "&requestType=" +
+      requestType;
+    //puts raw signature
+    // console.log("--------------------RAW SIGNATURE----------------");
+    // console.log(rawSignature);
+    // //signature
+    const crypto = require("crypto");
+    const signature = crypto
+      .createHmac("sha256", secretkey)
+      .update(rawSignature)
+      .digest("hex");
+    // console.log("--------------------SIGNATURE----------------");
+    // console.log(signature);
+
+    //json object send to MoMo endpoint
+    const requestBody = JSON.stringify({
+      partnerCode: partnerCode,
+      accessKey: accessKey,
+      requestId: requestId,
+      amount: amount,
+      orderId: orderId,
+      orderInfo: orderInfo,
+      redirectUrl: redirectUrl,
+      ipnUrl: ipnUrl,
+      extraData: extraData,
+      requestType: requestType,
+      signature: signature,
+      lang: "en",
+    });
+    //Create the HTTPS objects
+    const https = require("https");
+    const options = {
+      hostname: "test-payment.momo.vn",
+      port: 443,
+      path: "/v2/gateway/api/create",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(requestBody),
+      },
+    };
+    //Send the request and get the response
+
+    const req = https.request(options, (response) => {
+      //  console.log(`Status: ${response.statusCode}`);
+      //  console.log(`Headers: ${JSON.stringify(response.headers)}`);
+      response.setEncoding("utf8");
+      response.on("data", (body) => {
+        // console.log("Body: ");
+        // console.log(body);
+        // console.log("payUrl: ");
+        // console.log(JSON.parse(body).payUrl);
+        const newPayment = new payment(Carts, Address, orderId, username);
+        paymentData.push(newPayment);
+        setTimeout(() => {
+          paymentData = paymentData.filter((item) => {
+            return item !== newPayment;
+          });
+        }, 10 * 60 * 1000);
+        return res
+          .status(200)
+          .json({ success: true, data: JSON.parse(body).payUrl });
+      });
+      res.on("end", () => {
+        console.log("No more data in response.");
+      });
+    });
+    req.on("error", (e) => {
+      console.log(`problem with request: ${e.message}`);
+      return res
+        .status(500)
+        .json({ success: false, message: "Lỗi không xác định" });
+    });
+    // write data to request body
+    //  console.log("Sending....");
+    req.write(requestBody);
+    req.end();
   }
 });
 router.post("/carts", basicAuth, async (req, res) => {
