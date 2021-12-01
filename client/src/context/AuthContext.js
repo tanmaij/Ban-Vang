@@ -7,11 +7,8 @@ export const AuthProvider = ({ children }) => {
     const base64String = localStorage.getItem(
       process.env.REACT_APP_BASIC_AUTH_NAME
     );
-    if (base64String)
-      if (base64String !== undefined) {
-        const base64String = localStorage.getItem(
-          process.env.REACT_APP_BASIC_AUTH_NAME
-        );
+    if (base64String) {
+      if (base64String !== "") {
         axios
           .post(
             `${process.env.REACT_APP_SERVER_URL}/auth/login`,
@@ -27,7 +24,8 @@ export const AuthProvider = ({ children }) => {
             setaccountData(res.data.data);
           })
           .catch((error) => setaccountData(null));
-      }
+      } else setaccountData(null);
+    } else setaccountData(null);
   }, []);
 
   const authLogout = () => {
@@ -37,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkLogin = async () => {
     const base64 = localStorage.getItem(process.env.REACT_APP_BASIC_AUTH_NAME);
+    if (!base64) return false;
     try {
       if (base64)
         if (base64 !== undefined)

@@ -67,6 +67,7 @@ const Order = () => {
     const checkLogin = await authContext.checkLogin();
     if (checkLogin == false) {
       alert("Vui lòng đăng nhập");
+      window.location.replace("/auth/login");
     }
     await getReceipts();
   }, [authContext]);

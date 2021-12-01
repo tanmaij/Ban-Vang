@@ -2,11 +2,13 @@ import React from "react";
 import { Pagination } from "react-bootstrap";
 const Page = ({ pagination, query, setquery }) => {
   let totalPage;
-  if (pagination != null)
-    totalPage = Math.floor(
-      parseInt(pagination.total) / parseInt(pagination.limit) + 1
-    );
-
+  if (pagination != null) {
+    totalPage =
+      Math.floor(parseInt(pagination.total) / parseInt(pagination.limit)) + 1;
+    console.log(parseInt(pagination.limit), parseInt(pagination.total));
+    if (parseInt(pagination.total) % parseInt(pagination.limit) == 0)
+      totalPage--;
+  }
   if (pagination == null)
     return (
       <div

@@ -163,11 +163,10 @@ router.get("/", basicAuth, async (req, res) => {
     let responseReceipts = [...getReceipts];
     if (typeof parseInt(_payment) === "number") {
       responseReceipts = responseReceipts.filter((item) => {
-        console.log(item.PaymentMethod.toString() == _payment);
         return item.PaymentMethod.toString() == _payment;
       });
     }
-    console.log(_order, _sort);
+
     if (_order && _sort)
       if (_order === "createdAt") {
         if (_sort === "asc")
@@ -192,14 +191,16 @@ router.get("/", basicAuth, async (req, res) => {
       }
     let limit = responseReceipts.length;
     let page = 1;
+    let total = responseReceipts.length;
     if (_limit && _page)
       if (
         typeof parseInt(_limit) === "number" &&
-        typeof parseInt(_limit) === "number"
+        typeof parseInt(_page) === "number"
       ) {
         limit = parseInt(_limit);
         page = parseInt(_page);
       }
+
     responseReceipts = responseReceipts.slice((page - 1) * limit, page * limit);
     return res.status(200).json({
       success: true,
@@ -207,7 +208,7 @@ router.get("/", basicAuth, async (req, res) => {
       pagination: {
         page: page,
         limit: limit,
-        total: responseReceipts.length,
+        total: total,
       },
     });
   } catch (err) {

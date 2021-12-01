@@ -162,7 +162,6 @@ const Cart = () => {
   useEffect(async () => {
     const search = window.location.search;
     const orderId = new URLSearchParams(search).get("orderId");
-    console.log(orderId);
     if (orderId != null)
       try {
         const response = await axios.post(
@@ -190,6 +189,7 @@ const Cart = () => {
   }, []);
   useEffect(async () => {
     const checkLogin = await authContext.checkLogin();
+    console.log(checkLogin);
     if (!checkLogin) {
       cartContext.setcartCookie("");
       alert("Vui lòng đăng nhập");

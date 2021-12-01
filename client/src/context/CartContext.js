@@ -28,8 +28,10 @@ export const CartProvider = ({ children }) => {
     }
   };
   const addProduct = async (id) => {
-    if (!authContext.accountData)
+    if (!authContext.accountData) {
       alert("Vui lòng đăng nhập để sử dụng tính năng");
+      return;
+    }
     const check = await checkProduct(id);
     if (check == -1) alert("Có lỗi xảy ra");
     else if (check == 0) alert("Xin lỗi, sản phẩm đã hết hàng");

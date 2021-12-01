@@ -107,7 +107,8 @@ router.get("/", async (req, res) => {
         });
     }
     let page = 1,
-      limit = response.length;
+      limit = response.length,
+      total = response.length;
     if (_page && _limit) {
       page = parseInt(_page);
       limit = parseInt(_limit);
@@ -116,7 +117,7 @@ router.get("/", async (req, res) => {
     return res.status(200).json({
       success: true,
       data: response,
-      pagination: { page: page, limit: limit, total: response.length },
+      pagination: { page: page, limit: limit, total: total },
     });
   } catch (error) {
     console.log(error);
